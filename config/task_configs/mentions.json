@@ -1,0 +1,40 @@
+{
+  "best_eval_key": "mention_f1",
+  "mentions": {
+    "penalty": 1.0,
+    "output_fn": {
+      "name": "softmax_classifier",
+      "params": {
+        "targets": {
+          "label": "mentions"
+        }
+      }
+    },
+    "eval_fns": {
+      "mention_f1": {
+        "name": "conll_mentions_eval",
+        "params": {
+          "targets": {
+            "label": "mentions"
+          },
+          "predictions": {
+            "layer": "mentions",
+            "output": "predictions"
+          },
+          "mentions_eval_file": {
+            "value": "##save_dir##/mentions_gold_pred.txt"
+          },
+          "words": {
+            "feature": "word"
+          },
+          "reverse_maps": {
+            "reverse_maps": [
+              "word",
+              "mentions"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
