@@ -44,6 +44,11 @@ def idx_list_converter(split_line, idx):
     return [split_line[idx]]
   return [split_line[i] for i in idx]
 
+def mentions_to_bio_converter(split_line, idx):
+  if split_line[idx] == '_':
+    return 'O'
+  return [split_line[idx][0]]
+
 
 dispatcher = {
   'parse_roots_self_loop': parse_roots_self_loop_converter,
@@ -55,7 +60,8 @@ dispatcher = {
   'joint_converter': joint_converter,
   'idx_range_converter': idx_range_converter,
   'idx_list_converter': idx_list_converter,
-  'default_converter': idx_list_converter
+  'default_converter': idx_list_converter,
+  'mentions_to_bio': mentions_to_bio_converter
 }
 
 

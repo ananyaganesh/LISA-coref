@@ -233,6 +233,53 @@ def write_srl_debug(filename, words, predicates, sent_lens, role_labels, pos_pre
         print("%s\t%s\t%s\t%s\t%s\t%s" % (word_str, predicate_str, pos_t, pos_p, roles_str, bio_roles_str), file=f)
       print(file=f)
 
+def write_mentions_eval(filename, predictions, targets, words, sent_lens):
+  with open(filename, 'w') as mentions_file:
+    for sent_words, sent_len, sent_predictions, sent_targets in zip(words, sent_lens, predictions, targets):
+      for word, prediction, target in zip(sent_words[:sent_len], sent_predictions[:sent_len],
+                                          sent_targets[:sent_len]):
+        mentions_file.write(
+          word.decode('utf-8') + '\t' + prediction.decode('utf-8') + '\t' + target.decode('utf-8') + '\n')
+      mentions_file.write('\n')
+
+def conll_mentions_eval(mention_predictions, words, mask, mention_targets, mentions_eval_file):
+  # predictions: num_predicates_in_batch x batch_seq_len tensor of ints
+  # predicate predictions: batch_size x batch_seq_len [ x 1?] tensor of ints (0/1)
+  # words: batch_size x batch_seq_len tensor of ints (0/1)
+
+  # need to print for every word in every sentence
+  sent_lens = np.sum(mask, -1).astype(np.int32)
+
+  # import time
+  # debug_fname = pred_srl_eval_file.decode('utf-8') + str(time.time())
+  # write_srl_debug(debug_fname, words, predicate_targets, sent_lens, srl_targets, pos_predictions, pos_targets)
+
+  # write gold labels
+  write_mentions_eval(mentions_eval_file, mention_predictions, mention_targets, words, sent_lens)
+
+  # write predicted labels
+  # write_srl_eval(pred_srl_eval_file, words, predicate_predictions, sent_lens, srl_predictions)
+
+  # run eval script
+  precision, recall = 0.0, 0.0
+  with open('perlerror', 'w') as errorfile:
+    with open(mentions_eval_file) as mentions_file:
+      try:
+        mentions_eval = check_output(["perl", "bin/conlleval.pl"], stdin=mentions_file, stderr=errorfile)
+        mentions_eval = mentions_eval.decode('utf-8')
+        # print(mentions_eval)
+        terms = mentions_eval.split('\n')[0].split()
+        correct = int(terms[-1].strip('.'))
+        excess = int(terms[7].strip()) - correct
+        missed = int(terms[4].strip()) - correct
+
+        print(correct, excess, missed)
+
+        # correct, excess, missed = map(int, mentions_eval.split('\n')[0].split()[1:4])
+      except CalledProcessError as e:
+        tf.logging.log(tf.logging.ERROR, "Call to conlleval.pl (conll bio eval) failed.")
+
+  return correct, excess, missed
 
 def conll_srl_eval(srl_predictions, predicate_predictions, words, mask, srl_targets, predicate_targets,
                       pred_srl_eval_file, gold_srl_eval_file, pos_predictions=None, pos_targets=None):

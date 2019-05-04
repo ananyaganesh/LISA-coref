@@ -30,6 +30,9 @@
   "mentions": {
     "conll_idx": -1,
     "label": true,
-    "vocab": "mentions"
+    "vocab": "mentions",
+    "converter": {
+      "name": "mentions_to_bio"
+    }
   }
 }
