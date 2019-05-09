@@ -40,6 +40,8 @@ def softmax_classifier(mode, hparams, model_config, inputs, targets, num_labels,
 
   return output
 
+def mentions_self_attention():
+  return
 
 def get_separate_scores_preds_from_joint(joint_outputs, joint_maps, joint_num_labels):
   predictions = joint_outputs['predictions']

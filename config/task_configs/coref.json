@@ -1,0 +1,27 @@
+{
+  "mentions": {
+    "penalty": 1.0,
+    "output_fn": {
+      "name": "mentions_self_attention",
+      "params": {
+        "targets": {
+          "label": "mentions"
+        }
+      }
+    },
+    "eval_fns": {
+      "mention_f1": {
+        "name": "accuracy",
+        "params": {
+          "targets": {
+            "label": "mentions"
+          },
+          "predictions": {
+            "layer": "mentions",
+            "output": "predictions"
+          }
+        }
+      }
+    }
+  }
+}

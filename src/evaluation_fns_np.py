@@ -239,7 +239,7 @@ def write_mentions_eval(filename, predictions, targets, words, sent_lens):
       for word, prediction, target in zip(sent_words[:sent_len], sent_predictions[:sent_len],
                                           sent_targets[:sent_len]):
         mentions_file.write(
-          word.decode('utf-8') + '\t' + prediction.decode('utf-8') + '\t' + target.decode('utf-8') + '\n')
+          word.decode('utf-8') + '\t' + target.decode('utf-8') + '\t' + prediction.decode('utf-8') + '\n')
       mentions_file.write('\n')
 
 def conll_mentions_eval(mention_predictions, words, mask, mention_targets, mentions_eval_file):
@@ -261,7 +261,7 @@ def conll_mentions_eval(mention_predictions, words, mask, mention_targets, menti
   # write_srl_eval(pred_srl_eval_file, words, predicate_predictions, sent_lens, srl_predictions)
 
   # run eval script
-  precision, recall = 0.0, 0.0
+  correct, excess, missed = 0,0,0
   with open('perlerror', 'w') as errorfile:
     with open(mentions_eval_file) as mentions_file:
       try:
