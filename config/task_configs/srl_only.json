@@ -1,7 +1,7 @@
 {
   "srl": {
     "penalty": 1.0,
-    "viterbi": true,
+    "viterbi": false,
     "transition_stats": "##transition_stats##",
     "output_fn": {
       "name": "srl_bilinear",
